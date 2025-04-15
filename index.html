@@ -67,21 +67,21 @@
     </style>
 </head>
 <body>
-    <h1>Calculadora de Marchas</h1>
+    <h1>March calculator</h1>
     <div class="calculator">
         <div class="form-group">
-            <label for="totalArchers">Total de arqueros disponibles:</label>
+            <label for="totalArchers">Total arrows available (T10):</label>
             <input type="number" id="totalArchers" placeholder="Ej: 100000">
         </div>
         <div class="form-group">
-            <label for="marchSize">Tamaño de marcha:</label>
+            <label for="marchSize">March size:</label>
             <input type="number" id="marchSize" placeholder="Ej: 100000">
         </div>
         <div class="form-group">
-            <label for="marchCount">Cantidad de marchas (incluyendo la tuya):</label>
+            <label for="marchCount">Amount of marches:</label>
             <input type="number" id="marchCount" placeholder="Ej: 5">
         </div>
-        <button onclick="calculate()">Calcular</button>
+        <button onclick="calculate()">Calculate</button>
         
         <div id="results" class="results"></div>
     </div>
@@ -101,9 +101,9 @@
             }
             
             // Calcular "Mi marcha" (10% infantería, 10% lanceros, 80% arqueros)
-            const myInfantry = Math.round(marchSize * 0.1);
-            const myLancers = Math.round(marchSize * 0.1);
-            const myArchers = Math.round(marchSize * 0.8);
+            const myInfantry = 10000;
+            const myLancers = Math.round((marchSize - 10000) * 0.2);
+            const myArchers = Math.round((marchSize - 10000) * 0.8);
             
             // Verificar que la suma no exceda el tamaño de marcha
             const totalMyMarch = myInfantry + myLancers + myArchers;
@@ -119,14 +119,14 @@
                 return;
             }
             
-            const otherMarchesCount = marchCount - 1;
+            const otherMarchesCount = marchCount;
             const archersPerOtherMarch = otherMarchesCount > 0 ? Math.round(remainingArchers / otherMarchesCount) : 0;
             
             // Calcular lanceros para otras marchas (proporción 2:8)
             const lancersPerOtherMarch = Math.round(archersPerOtherMarch * 20 / 80);
             
             // Infantería para otras marchas (fijo 10k)
-            const infantryPerOtherMarch = 10000;
+            const infantryPerOtherMarch = 1;
             
             // Verificar que las otras marchas no excedan el tamaño
             const totalOtherMarch = infantryPerOtherMarch + lancersPerOtherMarch + archersPerOtherMarch;
