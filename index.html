@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>March Calculator | [KNG]Vikings</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>March Calculator | [KNG]Vikings</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,10 +28,6 @@
             margin-top: 20px;
             font-style: italic;
             color: #555;
-        }
-        h1 {
-            color: #333;
-            text-align: center;
         }
         .calculator {
             background-color: white;
@@ -80,17 +77,21 @@
             border-radius: 4px;
             border-left: 4px solid #4CAF50;
         }
-		
+        .warning {
+            color: #d32f2f;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-     <div class="header">
+    <div class="header">
         <img src="KNG.png" alt="[KNG]Vikings Logo">
         <h1>March Calculator</h1>
     </div>
+    
     <div class="calculator">
         <div class="form-group">
-            <label for="totalArchers">Total arrows available (T10):</label>
+            <label for="totalArchers">Total Arrows available (T10):</label>
             <input type="number" id="totalArchers" placeholder="Ej: 100000">
         </div>
         <div class="form-group">
@@ -105,83 +106,82 @@
         
         <div id="results" class="results"></div>
     </div>
- <div class="clan-credit">Made for <strong>[KNG]Vikings</strong></div>
+
+    <div class="clan-credit">Made for <strong>[KNG]Vikings</strong></div>
+
     <script>
         function calculate() {
             // Obtener valores de entrada
-            const totalArchers = parseInt(document.getElementById('totalArchers').value);
-            const marchSize = parseInt(document.getElementById('marchSize').value);
-            const marchCount = parseInt(document.getElementById('marchCount').value);
+            const totalArchers = parseInt(document.getElementById('totalArchers').value) || 0;
+            const marchSize = parseInt(document.getElementById('marchSize').value) || 0;
+            const marchCount = parseInt(document.getElementById('marchCount').value) || 0;
             
             // Validar entradas
-            if (isNaN(totalArchers) || isNaN(marchSize) || isNaN(marchCount) || 
-                totalArchers <= 0 || marchSize <= 0 || marchCount <= 0) {
-                alert("Please insert a value higher than 0.");
+            if (totalArchers <= 0 || marchSize <= 0 || marchCount <= 0) {
+                alert("Please insert valid values higher than 0.");
                 return;
             }
+
+            // 1. Calcular "My rally" (1 shield + ratio 2:8 sin exceder marchSize)
+            const myInfantry = 1;
+            const remainingCapacity = marchSize - myInfantry;
             
-            // Calcular "Mi marcha" (10% infantería, 10% lanceros, 80% arqueros)
-            const myInfantry = 10000;
-            const myLancers = Math.round((marchSize - 10000) * 0.2);
-            const myArchers = Math.round((marchSize - 10000) * 0.8);
+            // Calcular spears y arrows manteniendo ratio exacto 2:8
+            let myLancers = Math.floor(remainingCapacity * 0.2);
+            let myArchers = Math.floor(remainingCapacity * 0.8);
             
-            // Verificar que la suma no exceda el tamaño de marcha
-            const totalMyMarch = myInfantry + myLancers + myArchers;
-            if (totalMyMarch > marchSize) {
-                // Ajustar arqueros si hay desborde
-                myArchers = marchSize - myInfantry - myLancers;
+            // Ajuste final para asegurar que sumen exactamente el tamaño de marcha
+            const totalCalculated = myInfantry + myLancers + myArchers;
+            if (totalCalculated < marchSize) {
+                // Añadir el resto a los archers
+                myArchers += (marchSize - totalCalculated);
             }
+
+            // 2. Calcular para otras marchas (respetando marchSize)
+            const remainingArchers = Math.max(0, totalArchers - myArchers);
+            const otherMarchesCount = Math.max(0, marchCount - 1);
             
-            // Calcular arqueros para otras marchas
-            const remainingArchers = totalArchers - myArchers;
-            if (remainingArchers < 0) {
-                alert("No tienes suficientes arqueros para esta configuración.");
-                return;
+            let otherMarchesHTML = '';
+            let archersPerOtherMarch = 0;
+            let lancersPerOtherMarch = 0;
+            
+            if (otherMarchesCount > 0 && remainingArchers > 0) {
+                // Máximo de archers por marcha sin exceder marchSize (1 shield + ratio 2:8)
+                const maxArchersPerMarch = Math.floor((marchSize - 1) * 0.8);
+                archersPerOtherMarch = Math.min(
+                    Math.floor(remainingArchers / otherMarchesCount),
+                    maxArchersPerMarch
+                );
+                lancersPerOtherMarch = Math.floor(archersPerOtherMarch * 0.25); // 2:8 ratio
+                
+                // Calcular shields sobrantes si no usamos toda la capacidad
+                const remainingPerMarch = marchSize - (1 + lancersPerOtherMarch + archersPerOtherMarch);
+                
+                otherMarchesHTML = `
+                    <div class="march">
+                        <h3>Other marches (${otherMarchesCount}):</h3>
+                        <p>Shields: 1 (fixed)</p>
+                        <p>Spears: ${lancersPerOtherMarch.toLocaleString()}</p>
+                        <p>Arrows: ${archersPerOtherMarch.toLocaleString()}</p>
+                        <p><strong>Total per march: ${(1 + lancersPerOtherMarch + archersPerOtherMarch).toLocaleString()}/${marchSize.toLocaleString()}</strong></p>
+                        ${(1 + lancersPerOtherMarch + archersPerOtherMarch) < marchSize ? 
+                          `<p class="warning">Warning: March not completely filled (missing ${marchSize - (1 + lancersPerOtherMarch + archersPerOtherMarch)} units)</p>` : ''}
+                    </div>
+                    <p><strong>Total arrows used:</strong> ${(myArchers + (archersPerOtherMarch * otherMarchesCount)).toLocaleString()} of ${totalArchers.toLocaleString()}</p>`;
             }
-            
-            const otherMarchesCount = marchCount;
-            const archersPerOtherMarch = otherMarchesCount > 0 ? Math.round(remainingArchers / otherMarchesCount) : 0;
-            
-            // Calcular lanceros para otras marchas (proporción 2:8)
-            const lancersPerOtherMarch = Math.round(archersPerOtherMarch * 20 / 80);
-            
-            // Infantería para otras marchas (fijo 1)
-            const infantryPerOtherMarch = 1;
-            
-            // Verificar que las otras marchas no excedan el tamaño
-            const totalOtherMarch = infantryPerOtherMarch + lancersPerOtherMarch + archersPerOtherMarch;
-            
-            if (otherMarchesCount > 0 && totalOtherMarch > marchSize) {
-                alert("Congratulations! You have enough arrows to fill all your marches!");
-            }
-            
+
             // Mostrar resultados
-            let resultsHTML = `
+            document.getElementById('results').innerHTML = `
                 <h2>Troops distribution</h2>
                 <div class="march">
                     <h3>My rally:</h3>
-                    <p>Shields: ${myInfantry.toLocaleString()} (10%)</p>
-                    <p>Spears: ${myLancers.toLocaleString()} (10%)</p>
-                    <p>Arrows: ${myArchers.toLocaleString()} (80%)</p>
-                    <p><strong>Total: ${(myInfantry + myLancers + myArchers).toLocaleString()}</strong></p>
+                    <p>Shields: ${myInfantry}</p>
+                    <p>Spears: ${myLancers.toLocaleString()}</p>
+                    <p>Arrows: ${myArchers.toLocaleString()}</p>
+                    <p><strong>Total: ${marchSize.toLocaleString()}/${marchSize.toLocaleString()}</strong></p>
                 </div>
-            `;
-            
-            if (otherMarchesCount > 0) {
-                resultsHTML += `
-                    <div class="march">
-                        <h3>Other marches (${otherMarchesCount}):</h3>
-                        <p>Shields: ${infantryPerOtherMarch.toLocaleString()} (fixed)</p>
-                        <p>Spears: ${lancersPerOtherMarch.toLocaleString()} (${Math.round(lancersPerOtherMarch/(marchSize)*100)}%)</p>
-                        <p>Arrows: ${archersPerOtherMarch.toLocaleString()} (${Math.round(archersPerOtherMarch/(marchSize)*100)}%)</p>
-                        <p><strong>Total per march: ${totalOtherMarch.toLocaleString()}</strong></p>
-                        ${totalOtherMarch > marchSize ? `<p><strong>This march exceeds maximum size by ${(totalOtherMarch - marchSize).toLocaleString()} units!</strong></p>` : ''}
-                    </div>
-                    <p><strong>Total arrows used:</strong> ${(myArchers + (archersPerOtherMarch * otherMarchesCount)).toLocaleString()} of ${totalArchers.toLocaleString()} available</p>
-                `;
-            }
-            
-            document.getElementById('results').innerHTML = resultsHTML;
+                ${otherMarchesHTML}`;
+                
             document.getElementById('results').style.display = 'block';
         }
     </script>
