@@ -129,13 +129,11 @@
             const infantryPerOtherMarch = 1;
             
             // Verificar que las otras marchas no excedan el tamaño
-           const totalOtherMarch = infantryPerOtherMarch + lancersPerOtherMarch + archersPerOtherMarch;
-let sizeWarning = '';
-
-if (otherMarchesCount > 0 && totalOtherMarch > marchSize) {
-    alert("Congratulations! You have enough arrows to fill all your marches!");
-}
-
+            const totalOtherMarch = infantryPerOtherMarch + lancersPerOtherMarch + archersPerOtherMarch;
+            
+            if (otherMarchesCount > 0 && totalOtherMarch > marchSize) {
+                alert("Congratulations! You have enough arrows to fill all your marches!");
+            }
             
             // Mostrar resultados
             let resultsHTML = `
@@ -149,20 +147,19 @@ if (otherMarchesCount > 0 && totalOtherMarch > marchSize) {
                 </div>
             `;
             
-           if (otherMarchesCount > 0) {
-    resultsHTML += `
-        ${sizeWarning}
-        <div class="march">
-            <h3>Other marches (${otherMarchesCount}):</h3>
-            <p>Shields: ${infantryPerOtherMarch.toLocaleString()} (fixed)</p>
-            <p>Spears: ${lancersPerOtherMarch.toLocaleString()} (${Math.round(lancersPerOtherMarch/(marchSize)*100)}%)</p>
-            <p>Arrows: ${archersPerOtherMarch.toLocaleString()} (${Math.round(archersPerOtherMarch/(marchSize)*100)}%)</p>
-            <p><strong>Total per march: ${totalOtherMarch.toLocaleString()}</strong></p>
-            ${totalOtherMarch > marchSize ? `<p class="warning">This march exceeds maximum size by ${(totalOtherMarch - marchSize).toLocaleString()} units!</p>` : ''}
-        </div>
-        <p><strong>Total arrows used:</strong> ${(myArchers + (archersPerOtherMarch * otherMarchesCount)).toLocaleString()} of ${totalArchers.toLocaleString()} available</p>
-    `;
-}
+            if (otherMarchesCount > 0) {
+                resultsHTML += `
+                    <div class="march">
+                        <h3>Other marches (${otherMarchesCount}):</h3>
+                        <p>Shields: ${infantryPerOtherMarch.toLocaleString()} (fixed)</p>
+                        <p>Spears: ${lancersPerOtherMarch.toLocaleString()} (${Math.round(lancersPerOtherMarch/(marchSize)*100)}%)</p>
+                        <p>Arrows: ${archersPerOtherMarch.toLocaleString()} (${Math.round(archersPerOtherMarch/(marchSize)*100)}%)</p>
+                        <p><strong>Total per march: ${totalOtherMarch.toLocaleString()}</strong></p>
+                        ${totalOtherMarch > marchSize ? `<p><strong>This march exceeds maximum size by ${(totalOtherMarch - marchSize).toLocaleString()} units!</strong></p>` : ''}
+                    </div>
+                    <p><strong>Total arrows used:</strong> ${(myArchers + (archersPerOtherMarch * otherMarchesCount)).toLocaleString()} of ${totalArchers.toLocaleString()} available</p>
+                `;
+            }
             
             document.getElementById('results').innerHTML = resultsHTML;
             document.getElementById('results').style.display = 'block';
