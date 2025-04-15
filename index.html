@@ -96,7 +96,7 @@
             // Validar entradas
             if (isNaN(totalArchers) || isNaN(marchSize) || isNaN(marchCount) || 
                 totalArchers <= 0 || marchSize <= 0 || marchCount <= 0) {
-                alert("Por favor ingresa valores válidos mayores a cero.");
+                alert("Please insert a value higher than 0.");
                 return;
             }
             
@@ -125,40 +125,44 @@
             // Calcular lanceros para otras marchas (proporción 2:8)
             const lancersPerOtherMarch = Math.round(archersPerOtherMarch * 20 / 80);
             
-            // Infantería para otras marchas (fijo 10k)
+            // Infantería para otras marchas (fijo 1)
             const infantryPerOtherMarch = 1;
             
             // Verificar que las otras marchas no excedan el tamaño
-            const totalOtherMarch = infantryPerOtherMarch + lancersPerOtherMarch + archersPerOtherMarch;
-            if (otherMarchesCount > 0 && totalOtherMarch > marchSize) {
-                alert("El tamaño de marcha es insuficiente para la distribución calculada.");
-                return;
-            }
+           const totalOtherMarch = infantryPerOtherMarch + lancersPerOtherMarch + archersPerOtherMarch;
+let sizeWarning = '';
+
+if (otherMarchesCount > 0 && totalOtherMarch > marchSize) {
+    sizeWarning = `<div class="warning">Congratulations! You have enough arrows to fill all your marches!</div>`;
+}
+
             
             // Mostrar resultados
             let resultsHTML = `
-                <h2>Distribución de tropas</h2>
+                <h2>Troops distribution</h2>
                 <div class="march">
-                    <h3>Mi marcha:</h3>
-                    <p>Infantería: ${myInfantry.toLocaleString()} (10%)</p>
-                    <p>Lanceros: ${myLancers.toLocaleString()} (10%)</p>
-                    <p>Arqueros: ${myArchers.toLocaleString()} (80%)</p>
+                    <h3>My rally:</h3>
+                    <p>Shields: ${myInfantry.toLocaleString()} (10%)</p>
+                    <p>Spears: ${myLancers.toLocaleString()} (10%)</p>
+                    <p>Arrows: ${myArchers.toLocaleString()} (80%)</p>
                     <p><strong>Total: ${(myInfantry + myLancers + myArchers).toLocaleString()}</strong></p>
                 </div>
             `;
             
-            if (otherMarchesCount > 0) {
-                resultsHTML += `
-                    <div class="march">
-                        <h3>Otras marchas (${otherMarchesCount}):</h3>
-                        <p>Infantería: ${infantryPerOtherMarch.toLocaleString()} (fijo)</p>
-                        <p>Lanceros: ${lancersPerOtherMarch.toLocaleString()} (${Math.round(lancersPerOtherMarch/(marchSize)*100)}%)</p>
-                        <p>Arqueros: ${archersPerOtherMarch.toLocaleString()} (${Math.round(archersPerOtherMarch/(marchSize)*100)}%)</p>
-                        <p><strong>Total por marcha: ${totalOtherMarch.toLocaleString()}</strong></p>
-                    </div>
-                    <p><strong>Arqueros utilizados en total:</strong> ${(myArchers + (archersPerOtherMarch * otherMarchesCount)).toLocaleString()} de ${totalArchers.toLocaleString()} disponibles</p>
-                `;
-            }
+           if (otherMarchesCount > 0) {
+    resultsHTML += `
+        ${sizeWarning}
+        <div class="march">
+            <h3>Other marches (${otherMarchesCount}):</h3>
+            <p>Shields: ${infantryPerOtherMarch.toLocaleString()} (fixed)</p>
+            <p>Spears: ${lancersPerOtherMarch.toLocaleString()} (${Math.round(lancersPerOtherMarch/(marchSize)*100)}%)</p>
+            <p>Arrows: ${archersPerOtherMarch.toLocaleString()} (${Math.round(archersPerOtherMarch/(marchSize)*100)}%)</p>
+            <p><strong>Total per march: ${totalOtherMarch.toLocaleString()}</strong></p>
+            ${totalOtherMarch > marchSize ? `<p class="warning">This march exceeds maximum size by ${(totalOtherMarch - marchSize).toLocaleString()} units!</p>` : ''}
+        </div>
+        <p><strong>Total arrows used:</strong> ${(myArchers + (archersPerOtherMarch * otherMarchesCount)).toLocaleString()} of ${totalArchers.toLocaleString()} available</p>
+    `;
+}
             
             document.getElementById('results').innerHTML = resultsHTML;
             document.getElementById('results').style.display = 'block';
