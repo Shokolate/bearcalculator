@@ -122,8 +122,8 @@
                 return;
             }
 
-            // 1. Calcular "My rally" (1 shield + ratio 2:8 sin exceder marchSize)
-            const myInfantry = 1;
+            // 1. Calcular "My rally" (10k shield + ratio 2:8 sin exceder marchSize)
+            const myInfantry = 10000;
             const remainingCapacity = marchSize - myInfantry;
             
             // Calcular spears y arrows manteniendo ratio exacto 2:8
@@ -146,8 +146,8 @@
             let lancersPerOtherMarch = 0;
             
             if (otherMarchesCount > 0 && remainingArchers > 0) {
-                // Máximo de archers por marcha sin exceder marchSize (1 shield + ratio 2:8)
-                const maxArchersPerMarch = Math.floor((marchSize - 1) * 0.8);
+                // Máximo de archers por marcha sin exceder marchSize (10k shield + ratio 2:8)
+                const maxArchersPerMarch = Math.floor((marchSize - 10000) * 0.8);
                 archersPerOtherMarch = Math.min(
                     Math.floor(remainingArchers / otherMarchesCount),
                     maxArchersPerMarch
@@ -155,17 +155,17 @@
                 lancersPerOtherMarch = Math.floor(archersPerOtherMarch * 0.25); // 2:8 ratio
                 
                 // Calcular shields sobrantes si no usamos toda la capacidad
-                const remainingPerMarch = marchSize - (1 + lancersPerOtherMarch + archersPerOtherMarch);
+                const remainingPerMarch = marchSize - (10000 + lancersPerOtherMarch + archersPerOtherMarch);
                 
                 otherMarchesHTML = `
                     <div class="march">
                         <h3>Other marches (${otherMarchesCount}):</h3>
-                        <p>Shields: 1 (fixed)</p>
+                        <p>Shields: 10000 (fixed)</p>
                         <p>Spears: ${lancersPerOtherMarch.toLocaleString()}</p>
                         <p>Arrows: ${archersPerOtherMarch.toLocaleString()}</p>
-                        <p><strong>Total per march: ${(1 + lancersPerOtherMarch + archersPerOtherMarch).toLocaleString()}/${marchSize.toLocaleString()}</strong></p>
+                        <p><strong>Total per march: ${(10000 + lancersPerOtherMarch + archersPerOtherMarch).toLocaleString()}/${marchSize.toLocaleString()}</strong></p>
                         ${(1 + lancersPerOtherMarch + archersPerOtherMarch) < marchSize ? 
-                          `<p class="warning">Warning: March not completely filled (missing ${marchSize - (1 + lancersPerOtherMarch + archersPerOtherMarch)} units)</p>` : ''}
+                          `<p class="warning">Warning: March not completely filled (missing ${marchSize - (10000 + lancersPerOtherMarch + archersPerOtherMarch)} units)</p>` : ''}
                     </div>
                     <p><strong>Total arrows used:</strong> ${(myArchers + (archersPerOtherMarch * otherMarchesCount)).toLocaleString()} of ${totalArchers.toLocaleString()}</p>`;
             }
