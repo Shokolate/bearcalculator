@@ -164,7 +164,7 @@
                         <p>Spears: ${lancersPerOtherMarch.toLocaleString()}</p>
                         <p>Arrows: ${archersPerOtherMarch.toLocaleString()}</p>
                         <p><strong>Total per march: ${(10000 + lancersPerOtherMarch + archersPerOtherMarch).toLocaleString()}/${marchSize.toLocaleString()}</strong></p>
-                        ${(1 + lancersPerOtherMarch + archersPerOtherMarch) < marchSize ? 
+                        ${(10000 + lancersPerOtherMarch + archersPerOtherMarch) < marchSize ? 
                           `<p class="warning">Warning: March not completely filled (missing ${marchSize - (10000 + lancersPerOtherMarch + archersPerOtherMarch)} units)</p>` : ''}
                     </div>
                     <p><strong>Total arrows used:</strong> ${(myArchers + (archersPerOtherMarch * otherMarchesCount)).toLocaleString()} of ${totalArchers.toLocaleString()}</p>`;
